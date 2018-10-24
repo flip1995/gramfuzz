@@ -473,6 +473,7 @@ class GramFuzzer(object):
         total_errors = deque()
         total_gend = 0
         while total_gend < num:
+            self.tokens = []
             # use a rule definition from one of the preferred category
             # groups
             if len(self._last_pref_keys) > 0 and _maybe(preferred_ratio):
