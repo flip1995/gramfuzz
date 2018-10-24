@@ -1,3 +1,6 @@
+**NOTE**: This version of gramfuzz includes a hack specific for [comprakt-fuzz](https://github.com/comprakt/comprakt-fuzz), 
+that creates a token list in addition to the fuzzed text.
+
 # gramfuzz
 
 * master [![Build Status: Master](https://travis-ci.org/d0c-s4vage/gramfuzz.svg?branch=master)](https://travis-ci.org/d0c-s4vage/gramfuzz)
