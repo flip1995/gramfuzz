@@ -43,7 +43,7 @@ class MetaField(type):
     E.g. the two lines below are equivalent:
 
     .. code-block:: python
-        
+
         And(Int(), Float())
         (Int & Float)
 
@@ -87,7 +87,7 @@ class MetaField(type):
             return other
         else:
             return Or(self, other, rolling=True)
-    
+
     def __repr__(self):
         return "<{}>".format(self.__name__)
 
@@ -117,7 +117,7 @@ class Field(object):
 
     odds = []
     """``odds`` is a list of tuples that define probability values.
-    
+
     Each item in the list must be a tuple of the form:
 
     .. code-block:: python
@@ -160,7 +160,7 @@ class Field(object):
             return other
         else:
             return Or(self, other, rolling=True)
-    
+
     def _odds_val(self):
         """Determine a new random value derived from the
         defined :any:`gramfuzz.fields.Field.odds` value.
@@ -190,7 +190,7 @@ class Field(object):
             res = v
 
         return res
-    
+
     def __repr__(self):
         res = "<{}".format(self.__class__.__name__)
         if hasattr(self, "values"):
@@ -235,7 +235,7 @@ class Int(Field):
         self.min = kwargs.setdefault("min", self.min)
         self.max = kwargs.setdefault("max", self.max)
         self.odds = kwargs.setdefault("odds", self.odds)
-    
+
     def build(self, pre=None, shortest=False):
         """Build the integer, optionally providing a ``pre`` list
         that *may* be used to define prerequisites for a Field being built.
@@ -363,7 +363,7 @@ class Join(Field):
     """A ``Field`` subclass that joins other values with a separator.
     This class works nicely with ``Opt`` values.
     """
-    
+
     sep = ","
 
     def __init__(self, *values, **kwargs):
@@ -375,16 +375,16 @@ class Join(Field):
             This can be useful when a variable number of items in a list is needed. E.g.:
 
             .. code-block:: python
-            
+
                 Join(Int, max=5, sep=",")
         """
         self.values = list(values)
         self.sep = kwargs.setdefault("sep", self.sep)
         self.max = kwargs.setdefault("max", None)
-    
+
     def build(self, pre=None, shortest=False):
         """Build the ``Join`` field instance.
-        
+
         :param list pre: The prerequisites list
         :param bool shortest: Whether or not the shortest reference-chain (most minimal) version of the field should be generated.
         """
@@ -420,7 +420,7 @@ class And(Field):
 
     def __init__(self, *values, **kwargs):
         """Create a new ``And`` field instance.
-        
+
         :param list values: The list of values to be concatenated
         """
         self.sep = kwargs.setdefault("sep", self.sep)
@@ -428,7 +428,7 @@ class And(Field):
         # to be used internally, is not intended to be set directly by a user
         self.rolling = kwargs.setdefault("rolling", False)
         self.fuzzer = GramFuzzer.instance()
-    
+
     def build(self, pre=None, shortest=False):
         """Build the ``And`` instance
 
@@ -522,7 +522,7 @@ class Or(Field):
         if "options" in kwargs and len(values) == 0:
             self.values = kwargs["options"]
         self.rolling = kwargs.setdefault("rolling", False)
-    
+
     def build(self, pre=None, shortest=False):
         """Build the ``Or`` instance
 
@@ -650,10 +650,10 @@ class Def(Field):
         if "TOP_CAT" in frame.f_locals:
             self.fuzzer.cat_group_defaults[module_name] = frame.f_locals["TOP_CAT"]
         self.fuzzer.add_definition(self.cat, self.name, self, no_prune=self.no_prune, gram_file=module_name)
-    
+
     def build(self, pre=None, shortest=False):
         """Build this rule definition
-        
+
         :param list pre: The prerequisites list
         :param bool shortest: Whether or not the shortest reference-chain (most minimal) version of the field should be generated.
         """
@@ -722,7 +722,7 @@ class Ref(Field):
         self.failsafe = kwargs.setdefault("failsafe", self.failsafe)
 
         self.fuzzer = GramFuzzer.instance()
-    
+
     def build(self, pre=None, shortest=False):
         """Build the ``Ref`` instance by fetching the rule from
         the GramFuzzer instance and building it
@@ -746,12 +746,18 @@ class Ref(Field):
                 shortest=(shortest or REF_LEVEL >= self.max_recursion)
             )
 
+            if self.cat == "token":
+                token = self.refname
+                if self.refname == "identifier " or self.refname == "integer literal ":
+                    token += res
+                self.fuzzer.tokens.append(token)
+
             return res
 
         # this needs to happen no matter what
         finally:
             REF_LEVEL -= 1
-    
+
     def __repr__(self):
         return "<{}[{}]>".format(self.__class__.__name__, self.refname)
 
