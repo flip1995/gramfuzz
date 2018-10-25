@@ -750,6 +750,8 @@ class Ref(Field):
                 token = self.refname
                 if self.refname == "identifier " or self.refname == "integer literal ":
                     token += res
+                if self.refname == "String":
+                    token = "identifier " + self.refname
                 self.fuzzer.tokens.append(token)
 
             return res
