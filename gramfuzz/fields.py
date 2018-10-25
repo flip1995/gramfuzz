@@ -756,12 +756,14 @@ class Ref(Field):
             )
 
             if self.cat == "token":
-                token = self.refname
                 if not res in KEYWORDS:
+                    token = self.refname
                     if self.refname == "identifier " or self.refname == "integer literal ":
                         token += res
                     if self.refname == "String":
-                        token = "identifier " + self.refname
+                        token = "identifier String"
+                else:
+                    token = res
                 self.fuzzer.tokens.append(token)
 
             return res
