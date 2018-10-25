@@ -32,6 +32,15 @@ import gramfuzz.errors as errors
 import gramfuzz.rand as rand
 import gramfuzz.utils as utils
 
+KEYWORDS = ["abstract", "assert", "boolean", "break", "byte", "case", "catch",
+            "char", "class", "const", "continue", "default", "double", "do",
+            "else", "enum", "extends", "false", "finally", "final", "float",
+            "for", "goto", "if", "implements", "import", "instanceof",
+            "interface", "int", "long", "native", "new", "null", "package",
+            "private", "protected", "public", "return", "short", "static",
+            "strictfp", "super", "switch", "synchronized", "this", "throws",
+            "throw", "transient", "true", "try", "void", "volatile", "while"]
+
 
 class MetaField(type):
     """Used as the metaclass of the core :any:`gramfuzz.fields.Field` class. ``MetaField``
@@ -748,10 +757,11 @@ class Ref(Field):
 
             if self.cat == "token":
                 token = self.refname
-                if self.refname == "identifier " or self.refname == "integer literal ":
-                    token += res
-                if self.refname == "String":
-                    token = "identifier " + self.refname
+                if not res in KEYWORDS:
+                    if self.refname == "identifier " or self.refname == "integer literal ":
+                        token += res
+                    if self.refname == "String":
+                        token = "identifier " + self.refname
                 self.fuzzer.tokens.append(token)
 
             return res
